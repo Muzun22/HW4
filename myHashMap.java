@@ -220,16 +220,24 @@ class myHashMap<K,V> {
      */
 
     public V remove(K key) {
+        int index = getBucketIndex(key);
+        HashNode<K, V> head = bucket.get(index);
+        HashNode<K, V> prev = null;
 
-        /*
-         * ADD YOUR CODE HERE
-         *
-         * Review the code in the whole object to understand teh data structures layout.
-         * Additionally, review the method put() for inserting a new Key / Value pair into
-         * the HashMap. This method will do the opposite by removing an element. Do see
-         * the return value discussion in this method's prologue to make sure the correct
-         * return value is returned the invoking function based on the remove outcome.
-         */
+        // find the key
+        while (head != null) {
+            if (head.key.equals(key)) {
+                if (prev != null) {
+                    prev.next = head.next;
+                } else {
+                    bucket.set(index, head.next); // Remove head
+                }
+                size--;
+                return head.value; // return removed value
+            }
+            prev = head;
+            head = head.next;
+        }
 
         return null;
     }
@@ -251,8 +259,8 @@ class myHashMap<K,V> {
 
         V originalValue = get(key);
 
-        if (originalValue == null || 
-           (! originalValue.equals(val)) ) {
+        if (originalValue == null ||
+                (! originalValue.equals(val)) ) {
             return false;
         }
 
@@ -321,8 +329,8 @@ class myHashMap<K,V> {
         }
 
         /*
-         * Check the load factor of the hashmap, if greater 
-         * than DEFAULT_LOAD_FACTOR, we will double the number 
+         * Check the load factor of the hashmap, if greater
+         * than DEFAULT_LOAD_FACTOR, we will double the number
          * of buckets of our hashmap.
          */
 
@@ -341,7 +349,7 @@ class myHashMap<K,V> {
              * Traverse the original buckets, and for each bucket
              * traverse the nodes stored there (via linked-list).
              * For each node (<key, value> pair), add to the new
-             * (grown) bucket list. The re-add process will 
+             * (grown) bucket list. The re-add process will
              * rehash the keys to the new bucket size.
              */
             for (HashNode<K, V> headNode : tmp) {
@@ -382,57 +390,38 @@ class myHashMap<K,V> {
     }
 
 
-    /**
-     * method: V replace(K, V)
-     *
-     * Replaces the entry for the specified key only if it is currently mapped to some value (aka, the
-     * key already exist with some value).
-     *
-     *  @param key   - Key for the <k, v> pair to replace its 
-     *                 value
-     *  @param val   - The new value to replace the old one if 
-     *                 found.
-     *
-     *  @return V  - returns the old value for the <k,v> pair, 
-     *               else null if not found.
-     */
 
-    public V replace(K key, V val) {
 
-        /*
-         * ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME AT TOP OF FILE
-         *
-         * Make sure you return the proper value based on the outcome of this method's
-         * replace (see method's prologue above).
-         */
+    public V replace(K key, V value) {
+        int index = getBucketIndex(key);
+        HashNode<K, V> head = bucket.get(index);
 
-        return val;
+        while (head != null) {
+            if (head.key.equals(key)) {
+                V oldValue = head.value;
+                head.value = value; // Replace value
+                return oldValue; // Return previous value
+            }
+            head = head.next;
+        }
+
+        return null;
     }
 
-    
-    /**
-     * method: boolean replace(K, V, V)
-     *
-     * Replaces the entry for the specified key only if currently mapped to the specified value.
-     *
-     *  @param key    - Key for the <k, v> pair to replace its 
-     *                  value
-     *  @param oldVal - Replace only if current <k,v>'s value 
-     *                  is same as oldVal
-     *  @param newVal - the new value to use.
-     *
-     *  @return V  - returns the old value for the <k,v> pair, 
-     *               else null if not found.
-     */
 
-    public boolean replace(K key, V oldVal, V newVal) {
 
-        /*
-         * ADD YOUR CODE HERE
-         *
-         * This method should apply the precondition (aka, the Key already exists with the
-         * value 'oldval', and is so, it SHOULD call replace(K, V) for code reuse.
-         */
+
+    public boolean replace(K key, V oldValue, V newValue) {
+        int index = getBucketIndex(key);
+        HashNode<K, V> head = bucket.get(index);
+
+        while (head != null) {
+            if (head.key.equals(key) && head.value.equals(oldValue)) {
+                head.value = newValue; // if value matches oldValue replace it
+                return true;
+            }
+            head = head.next;
+        }
 
         return false;
     }
